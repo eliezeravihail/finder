@@ -260,6 +260,8 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 #sort by line, top first
                 listToFilter.sort(key=lambda x:x[4])
                 
+              
+              
                 # filter by wanded word only
                 index = 0
                 resutl = []
@@ -269,24 +271,43 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                   find = False
                   orginali = i
                   line = listToFilter[i][4]
-                  while i < len(listToFilter) and index < len(word) and listToFilter[i][0].split()[0] == word[index] and listToFilter[i][4] == line :
+                  while i < len(listToFilter) and index < len(word) and listToFilter[i][0].split()[0] == word[index] and listToFilter[i][4] == line:
                     index+=1
                     i+=1
                     if index == len(word):
-                      resutl.extend(listToFilter[orginali:orginali+index])
+                      resutl.extend([listToFilter[orginali:orginali+index]])
                       find =True
-                  i = i+1 if find else orginali+1
+                  i = i if find else orginali+1
                   index = 0
 
-                       
-
-                for ind, i in enumerate(resutl):
+                for i in resutl:
                   if not (save_img or save_crop or view_img):
                     break
-                  c = 0
-                  #i[0]+" "+
-                  print(intToGim(i[0].split()[0]),end=" ")
-                  plot_one_box(i[1], im0, label=intToGimL(i[0].split()[0])+":"+str(i[4])+":"+str(ind), color=colors(c, True), line_thickness=line_thickness)
+                  c = 11
+                  prev = i[0]
+                  for j in i:
+                    print(prev[0],j,abs(j[2][0] + j[2][2] - prev[2][0])<=j[2][2]/2)
+                    if abs(j[2][0] + j[2][2] - prev[2][0])<=j[2][2]/2:
+                      plot_one_box(j[1], im0, label=intToGimL(j[0].split()[0]), color=colors(c, True), line_thickness=line_thickness)
+                    prev = j
+                # ind = 0
+                # prev = None if len(resutl)<1 else resutl[0]
+                # i = 0
+                # while i < len(resutl):
+                #   if not (save_img or save_crop or view_img):
+                #     break
+                #   orginal = resutl[i][1]
+                #   index = 0
+                #   while i<len(resutl) and abs(resutl[i][2]-resutl[i][2][2])<resutl[i][2][2]/2:
+                #     if index == len(word):
+                #       resutl.extend(listToFilter[orginali:orginali+index])
+                #       find =True
+                #     i+=1
+                #   ind = 1 if resutl[i][4] != prev[4] else ind+1
+                #   c = 1
+                #   plot_one_box(resutl[i][1], im0, label=intToGimL(resutl[i][0].split()[0])+":"+str(ind), color=colors(c, True), line_thickness=line_thickness)
+                #   prev = resutl[i]
+                #   i+=1
  
             # print("\nthe dict is:\n",dictLabel)
             # Print time (inference + NMS)
