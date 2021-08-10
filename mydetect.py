@@ -25,7 +25,38 @@ from utils.general import check_img_size, check_requirements, check_imshow, colo
 from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_sync
 
-
+def gimatrya(word:str)->set:
+  gimHash = dict()
+  gimHash["א"]="1"
+  gimHash["ב"]="2"
+  gimHash["ג"]="3"
+  gimHash["ד"]="4"
+  gimHash["ה"]="5"
+  gimHash["ו"]="6"
+  gimHash["ז"]="7"
+  gimHash["ח"]="8"
+  gimHash["ט"]="9"
+  gimHash["י"]="10"
+  gimHash["כ"]="20"
+  gimHash["ל"]="30"
+  gimHash["מ"]="40"
+  gimHash["נ"]="50"
+  gimHash["ס"]="60"
+  gimHash["ע"]="70"
+  gimHash["פ"]="80"
+  gimHash["צ"]="90"
+  gimHash["ק"]="100"
+  gimHash["ר"]="200"
+  gimHash["ש"]="300"
+  gimHash["ת"]="400"
+  gimHash["ך"]="500"
+  gimHash["ם"]="600"
+  gimHash["ן"]="700"
+  gimHash["ף"]="800"
+  gimHash["ץ"]="900"
+  chars = list(word)
+  return [gimHash[x] for x in chars]
+    
 @torch.no_grad()
 def run(weights='yolov5s.pt',  # model.pt path(s)
         source='data/images',  # file/dir/URL/glob, 0 for webcam
@@ -150,7 +181,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                 # Write results
-                for *xyxy, conf, cls in reversed(det):
+                for *xyxy, conf, cls in det:
                     if save_txt:  # Write to file
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
@@ -162,26 +193,19 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         dictLabel[names[c]] = c
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
                         listToFilter.append([label,xyxy, xywh])
-                        # plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=line_thickness)
-                        # print(label,xywh)
+                        plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=line_thickness)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
-                
-                listToFilter.sort(key=lambda x: x[1][0],reverse=True)
-                listToFilter.sort(key=lambda x: x[1][1])
+                #sort by X, right first
+                listToFilter.sort(key=lambda x: ((x[2][0])*1000)//1,reverse=True)
+                #sort by y, top first
+                listToFilter.sort(key=lambda x: ((x[2][1])*1000)//1)
                 index = 0
-                resutl = []
+                resutl = listToFilter[0:3]
                 i = 0
-                while i < len(listToFilter):
-                    # print(resutl)
-                    orginali = i
-                    resutl.extend(listToFilter[orginali:orginali+1])#:orginali+len(word)])#
-                    while i < len(listToFilter) and index < len(word) and listToFilter[i][0] == word[index]:
-                        i += 1
-                        index += 1 
-                        if index+1 != len(word):
-                          pass
-                    index = 0
+                word = gimatrya(word)
+                while i < 4: #len(listToFilter):
+                    print(word, listToFilter[i][2][0]*1000//1, listToFilter[i][2][0]*1000//1)
                     i += 1
                           
                 for i in resutl:
