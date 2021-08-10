@@ -192,21 +192,37 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         c = int(cls)  # integer class
                         dictLabel[names[c]] = c
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
-                        listToFilter.append([label,xyxy, xywh])
+                        xline = 0
+                        yline = 0
+                        # listToFilter.append([label,xyxy, xywh, xline,yline])
                         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=line_thickness)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
+                
+                #sort by rew y, top first
+                listToFilter.sort(key=lambda x: ((x[2][1])*1000)//1)
+                #================ merge line index ======================================
+                prev = (listToFilter[0][2][1]*1000)//1
+                lineIndex = 0
+                for i in listToFilter:
+                  currect = (i[2][1]*1000)//1
+                  if abs(currect-prev)>i[2][3]/3:
+                    i[4] = lineIndex
+                  else:
+                    #is line break
+                    lineIndex+=1
+                    i[4] = lineIndex
+                
+                listToFilter.sort(key=lambda x:x[4])
                 #sort by X, right first
                 listToFilter.sort(key=lambda x: ((x[2][0])*1000)//1,reverse=True)
-                #sort by y, top first
-                listToFilter.sort(key=lambda x: ((x[2][1])*1000)//1)
-                index = 0
-                resutl = listToFilter[0:3]
+                # index = 0
+                resutl = list(filter(lambda x:x[4]<1,listToFilter))
                 i = 0
-                word = gimatrya(word)
-                while i < 4: #len(listToFilter):
-                    print(word, listToFilter[i][2][0]*1000//1, listToFilter[i][2][0]*1000//1)
-                    i += 1
+                # word = gimatrya(word)
+                # while i < 4: #len(listToFilter):
+                    # print(word, listToFilter[i][2][0]*1000//1, listToFilter[i][2][1]*1000//1)
+                    # i += 1
                           
                 for i in resutl:
                   if not (save_img or save_crop or view_img):
