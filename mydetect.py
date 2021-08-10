@@ -167,28 +167,27 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
                 
+                listToFilter.sort(key=lambda x: x[1][0],reverse=True)
                 listToFilter.sort(key=lambda x: x[1][1])
-                listToFilter.sort(key=lambda x: x[1][0])
                 index = 0
-                word = ["15","12"]
                 resutl = []
                 i = 0
-                while i < len(allDetects):
+                while i < len(listToFilter):
+                    # print(resutl)
                     orginali = i
-                    while i < len(allDetects) and index < len(word) and allDetects[i][0] == word[index]:
+                    resutl.extend(listToFilter[orginali:orginali+1])#:orginali+len(word)])#
+                    while i < len(listToFilter) and index < len(word) and listToFilter[i][0] == word[index]:
                         i += 1
-                        index += 1
-                        if index+1 == len(word):
-                            resutl.append(allDetects[orginali:orginali+len(word)])
+                        index += 1 
+                        if index+1 != len(word):
+                          pass
                     index = 0
                     i += 1
                           
-                for i in listToFilter:
+                for i in resutl:
                   if not (save_img or save_crop or view_img):
                     break
-                  # c = 0
-                  # leng = len(word)
-                  # trusItem = []
+                  c = 0
                   plot_one_box(i[1], im0, label=i[0], color=colors(c, True), line_thickness=line_thickness)
  
             # print("\nthe dict is:\n",dictLabel)
