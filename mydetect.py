@@ -169,8 +169,20 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 
                 listToFilter.sort(key=lambda x: x[1][1])
                 listToFilter.sort(key=lambda x: x[1][0])
-                print(listToFilter)
-                
+                index = 0
+                word = ["15","12"]
+                resutl = []
+                i = 0
+                while i < len(allDetects):
+                    orginali = i
+                    while i < len(allDetects) and index < len(word) and allDetects[i][0] == word[index]:
+                        i += 1
+                        index += 1
+                        if index+1 == len(word):
+                            resutl.append(allDetects[orginali:orginali+len(word)])
+                    index = 0
+                    i += 1
+                          
                 for i in listToFilter:
                   if not (save_img or save_crop or view_img):
                     break
