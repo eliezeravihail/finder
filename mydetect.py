@@ -194,11 +194,13 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
                         xline = 0
                         yline = 0
-                        # listToFilter.append([label,xyxy, xywh, xline,yline])
-                        plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=line_thickness)
+                        listToFilter.append([label,xyxy, xywh, xline,yline])
+                        # plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=line_thickness)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
-                
+                """
+                sort by line and char index =================================
+                """
                 #sort by rew y, top first
                 listToFilter.sort(key=lambda x: ((x[2][1])*1000)//1)
                 #================ merge line index ======================================
@@ -206,29 +208,49 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 lineIndex = 0
                 for i in listToFilter:
                   currect = (i[2][1]*1000)//1
-                  if abs(currect-prev)>i[2][3]/3:
+                  Hchar = (i[2][3]*1000)//3
+                  print(currect,Hchar,prev)
+                  if abs(currect-prev)<Hchar:
                     i[4] = lineIndex
                   else:
                     #is line break
                     lineIndex+=1
                     i[4] = lineIndex
+                  prev = currect
                 
-                listToFilter.sort(key=lambda x:x[4])
                 #sort by X, right first
                 listToFilter.sort(key=lambda x: ((x[2][0])*1000)//1,reverse=True)
-                # index = 0
-                resutl = list(filter(lambda x:x[4]<1,listToFilter))
+                #sort by line, top first
+                listToFilter.sort(key=lambda x:x[4])
+                
+                
+                # filter by wonded word only
+                index = 0
+                resutl = []
                 i = 0
-                # word = gimatrya(word)
-                # while i < 4: #len(listToFilter):
-                    # print(word, listToFilter[i][2][0]*1000//1, listToFilter[i][2][1]*1000//1)
-                    # i += 1
-                          
-                for i in resutl:
+                word = gimatrya(word)
+                while i<len(listToFilter):
+                  orginali = i
+                  while i < len(listToFilter) and index < len(word) and listToFilter[i][0].split()[0] == word[index]:
+                  if i+len(word)<=len(listToFilter) and sorted([x[0].split()[0] for x in listToFilter[i:i+len(word)]]) == sorted(word):
+                  resutl.extend(listToFilter[i:i+len(word)])
+                  i+=len(word)-1
+                  """
+                  while i < len(listToFilter) and index < len(word) and listToFilter[i][0].split()[0] == word[index]:
+                  if index+1 == len(word):
+                  resutl.extend(listToFilter[orginali:(orginali+len(word))%len(listToFilter)])#:orginali+len(word)])#
+                  break
+                  index += 1 
+                  i += 1
+                  """
+                  index = 0       
+
+                for ind, i in enumerate(resutl):
                   if not (save_img or save_crop or view_img):
                     break
                   c = 0
-                  plot_one_box(i[1], im0, label=i[0], color=colors(c, True), line_thickness=line_thickness)
+                  #i[0]+" "+
+                  plot_one_box(i[1], im0, label=" "+str(i[4])+"x: "+str(ind), color=colors(c, True), line_thickness=line_thickness)
  
             # print("\nthe dict is:\n",dictLabel)
             # Print time (inference + NMS)
