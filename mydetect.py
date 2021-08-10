@@ -24,39 +24,77 @@ from utils.general import check_img_size, check_requirements, check_imshow, colo
     apply_classifier, scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
 from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_sync
+gimHashl = dict()
+gimHashl["a"]="1"
+gimHashl["b"]="2"
+gimHashl["c"]="3"
+gimHashl["d"]="4"
+gimHashl["h"]="5"
+gimHashl["v"]="6"
+gimHashl["z"]="7"
+gimHashl["ht"]="8"
+gimHashl["t"]="9"
+gimHashl["y"]="10"
+gimHashl["caf"]="20"
+gimHashl["l"]="30"
+gimHashl["m"]="40"
+gimHashl["n"]="50"
+gimHashl["s"]="60"
+gimHashl["ayin"]="70"
+gimHashl["f"]="80"
+gimHashl["tdik"]="90"
+gimHashl["kof"]="100"
+gimHashl["r"]="200"
+gimHashl["sh"]="300"
+gimHashl["tav"]="400"
+gimHashl["endC"]="500"
+gimHashl["endM"]="600"
+gimHashl["endN"]="700"
+gimHashl["endF"]="800"
+gimHashl["endTa"]="900"
+
+
+gimHash = dict()
+gimHash["א"]="1"
+gimHash["ב"]="2"
+gimHash["ג"]="3"
+gimHash["ד"]="4"
+gimHash["ה"]="5"
+gimHash["ו"]="6"
+gimHash["ז"]="7"
+gimHash["ח"]="8"
+gimHash["ט"]="9"
+gimHash["י"]="10"
+gimHash["כ"]="20"
+gimHash["ל"]="30"
+gimHash["מ"]="40"
+gimHash["נ"]="50"
+gimHash["ס"]="60"
+gimHash["ע"]="70"
+gimHash["פ"]="80"
+gimHash["צ"]="90"
+gimHash["ק"]="100"
+gimHash["ר"]="200"
+gimHash["ש"]="300"
+gimHash["ת"]="400"
+gimHash["ך"]="500"
+gimHash["ם"]="600"
+gimHash["ן"]="700"
+gimHash["ף"]="800"
+gimHash["ץ"]="900"
+toCharhash = {y:x for x,y in gimHash.items()}
+toCharhashL = {y:x for x,y in gimHashl.items()}
 
 def gimatrya(word:str)->set:
-  gimHash = dict()
-  gimHash["א"]="1"
-  gimHash["ב"]="2"
-  gimHash["ג"]="3"
-  gimHash["ד"]="4"
-  gimHash["ה"]="5"
-  gimHash["ו"]="6"
-  gimHash["ז"]="7"
-  gimHash["ח"]="8"
-  gimHash["ט"]="9"
-  gimHash["י"]="10"
-  gimHash["כ"]="20"
-  gimHash["ל"]="30"
-  gimHash["מ"]="40"
-  gimHash["נ"]="50"
-  gimHash["ס"]="60"
-  gimHash["ע"]="70"
-  gimHash["פ"]="80"
-  gimHash["צ"]="90"
-  gimHash["ק"]="100"
-  gimHash["ר"]="200"
-  gimHash["ש"]="300"
-  gimHash["ת"]="400"
-  gimHash["ך"]="500"
-  gimHash["ם"]="600"
-  gimHash["ן"]="700"
-  gimHash["ף"]="800"
-  gimHash["ץ"]="900"
   chars = list(word)
   return [gimHash[x] for x in chars]
-    
+
+def intToGim(num:str):
+    return toCharhash[num]
+
+def intToGimL(num:str):
+    return toCharhashL[num]
+
 @torch.no_grad()
 def run(weights='yolov5s.pt',  # model.pt path(s)
         source='data/images',  # file/dir/URL/glob, 0 for webcam
@@ -195,7 +233,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         xline = 0
                         yline = 0
                         listToFilter.append([label,xyxy, xywh, xline,yline])
-                        # plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=line_thickness)
+                        # plot_one_box(xyxy, im0, label=intToGimL(label.split()[0]), color=colors(c, True), line_thickness=line_thickness)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
                 """
@@ -208,8 +246,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 lineIndex = 0
                 for i in listToFilter:
                   currect = (i[2][1]*1000)//1
-                  Hchar = (i[2][3]*1000)//3
-                  print(currect,Hchar,prev)
+                  Hchar = (i[2][3]*1000)//2
                   if abs(currect-prev)<Hchar:
                     i[4] = lineIndex
                   else:
@@ -223,34 +260,33 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 #sort by line, top first
                 listToFilter.sort(key=lambda x:x[4])
                 
-                
-                # filter by wonded word only
+                # filter by wanded word only
                 index = 0
                 resutl = []
                 i = 0
                 word = gimatrya(word)
                 while i<len(listToFilter):
+                  find = False
                   orginali = i
-                  while i < len(listToFilter) and index < len(word) and listToFilter[i][0].split()[0] == word[index]:
-                  if i+len(word)<=len(listToFilter) and sorted([x[0].split()[0] for x in listToFilter[i:i+len(word)]]) == sorted(word):
-                  resutl.extend(listToFilter[i:i+len(word)])
-                  i+=len(word)-1
-                  """
-                  while i < len(listToFilter) and index < len(word) and listToFilter[i][0].split()[0] == word[index]:
-                  if index+1 == len(word):
-                  resutl.extend(listToFilter[orginali:(orginali+len(word))%len(listToFilter)])#:orginali+len(word)])#
-                  break
-                  index += 1 
-                  i += 1
-                  """
-                  index = 0       
+                  line = listToFilter[i][4]
+                  while i < len(listToFilter) and index < len(word) and listToFilter[i][0].split()[0] == word[index] and listToFilter[i][4] == line :
+                    index+=1
+                    i+=1
+                    if index == len(word):
+                      resutl.extend(listToFilter[orginali:orginali+index])
+                      find =True
+                  i = i+1 if find else orginali+1
+                  index = 0
+
+                       
 
                 for ind, i in enumerate(resutl):
                   if not (save_img or save_crop or view_img):
                     break
                   c = 0
                   #i[0]+" "+
-                  plot_one_box(i[1], im0, label=" "+str(i[4])+"x: "+str(ind), color=colors(c, True), line_thickness=line_thickness)
+                  print(intToGim(i[0].split()[0]),end=" ")
+                  plot_one_box(i[1], im0, label=intToGimL(i[0].split()[0])+":"+str(i[4])+":"+str(ind), color=colors(c, True), line_thickness=line_thickness)
  
             # print("\nthe dict is:\n",dictLabel)
             # Print time (inference + NMS)
