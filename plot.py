@@ -52,7 +52,7 @@ def hist2d(x, y, n=100):
     return np.log(hist[xidx, yidx])
 
 def plot_one_word(x,y,im, color=(128, 128, 128), label=None, line_thickness=3):
-    color=(113, 52, 0)
+    color=(141, 12, 72)
     label=None
     # Plots one bounding box on image 'im' using OpenCV
     assert im.data.contiguous, 'Image not contiguous. Apply np.ascontiguousarray(im) to plot_on_box() input image.'
