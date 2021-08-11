@@ -246,7 +246,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 lineIndex = 0
                 for i in listToFilter:
                   currect = (i[2][1]*1000)//1
-                  Hchar = (i[2][3]*1000)//2
+                  Hchar = (i[2][3]*1000)//3
                   if abs(currect-prev)<Hchar:
                     i[4] = lineIndex
                   else:
