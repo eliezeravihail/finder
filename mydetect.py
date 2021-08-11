@@ -1,7 +1,7 @@
+
 #myadded
 dictLabel = dict()
 """Run inference with a YOLOv5 model on images, videos, directories, streams
-
 Usage:
     $ python path/to/detect.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
@@ -22,7 +22,7 @@ from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, colorstr, non_max_suppression, \
     apply_classifier, scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
-from utils.plots import colors, plot_one_box
+from utils.plots import colors, plot_one_box,  plot_one_word
 from utils.torch_utils import select_device, load_classifier, time_sync
 gimHashl = dict()
 gimHashl["a"]="1"
@@ -285,30 +285,16 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                     break
                   c = 11
                   prev = i[0]
+                  flag = True
                   for j in i:
-                    print(prev[0],j,abs(j[2][0] + j[2][2] - prev[2][0])<=j[2][2]/2)
-                    if abs(j[2][0] + j[2][2] - prev[2][0])<=j[2][2]/2:
-                      plot_one_box(j[1], im0, label=intToGimL(j[0].split()[0]), color=colors(c, True), line_thickness=line_thickness)
-                    prev = j
-                # ind = 0
-                # prev = None if len(resutl)<1 else resutl[0]
-                # i = 0
-                # while i < len(resutl):
-                #   if not (save_img or save_crop or view_img):
-                #     break
-                #   orginal = resutl[i][1]
-                #   index = 0
-                #   while i<len(resutl) and abs(resutl[i][2]-resutl[i][2][2])<resutl[i][2][2]/2:
-                #     if index == len(word):
-                #       resutl.extend(listToFilter[orginali:orginali+index])
-                #       find =True
-                #     i+=1
-                #   ind = 1 if resutl[i][4] != prev[4] else ind+1
-                #   c = 1
-                #   plot_one_box(resutl[i][1], im0, label=intToGimL(resutl[i][0].split()[0])+":"+str(ind), color=colors(c, True), line_thickness=line_thickness)
-                #   prev = resutl[i]
-                #   i+=1
- 
+                    if abs(j[2][0] + j[2][2] - prev[2][0])<=j[2][2]/2 or id(prev) == id(j):
+                      prev = j
+                    else:
+                      flag = False
+                  if flag:
+                      plot_one_word(i[0][1],i[len(i)-1][1],im0, label=intToGimL(j[0].split()[0]), color=colors(4, True), line_thickness=line_thickness)
+                    
+               
             # print("\nthe dict is:\n",dictLabel)
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
