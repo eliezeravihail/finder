@@ -285,13 +285,16 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                     break
                   c = 11
                   prev = i[0]
+                  flag = True
                   for j in i:
-                    # print(prev[0],j,abs(j[2][0] + j[2][2] - prev[2][0])<=j[2][2]/2)
                     if abs(j[2][0] + j[2][2] - prev[2][0])<=j[2][2]/2 or id(prev) == id(j):
-                      plot_one_box(j[1], im0, label=intToGimL(j[0].split()[0]), color=colors(4, True), line_thickness=line_thickness)
+                      prev = j
                     else:
-                      plot_one_box(j[1], im0, label=intToGimL(j[0].split()[0]), color=colors(c, True), line_thickness=line_thickness)
-                    prev = j
+                      flag = False
+                  if flag:
+                    for j in i:
+                      plot_one_box(j[1], im0, label=intToGimL(j[0].split()[0]), color=colors(4, True), line_thickness=line_thickness)
+                    
                
             # print("\nthe dict is:\n",dictLabel)
             # Print time (inference + NMS)
